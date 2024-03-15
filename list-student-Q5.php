@@ -22,8 +22,8 @@ include('includes/header.php');
     // https://www.w3schools.com/php/php_superglobals_get.asp
     // https://www.w3schools.com/php/func_array_key_exists.asp
     // Validate sort and order values to prevent SQL errors and hacks.
-    $sort  = empty($_GET) ? 'StudentID' : (array_key_exists($_GET['sort'], $headers) ? $_GET['sort'] : 'StudentID');
-    $order = empty($_GET) ? 'ASC' : ($_GET['order'] == 'DESC' ? 'DESC' : 'ASC');
+    $sort  = empty($_GET) ? 'StudentID' : (array_key_exists($_GET['sort'], $headers) ? $_GET['sort'] : 'StudentID'); // if empty, default to StudentID.
+    $order = empty($_GET) ? 'ASC' : ($_GET['order'] == 'DESC' ? 'DESC' : 'ASC'); // if empty, default to ASC.
 
     ///////////////////////////////////////////////////////////////////////
     // Generate clickable table headers ///////////////////////////////////
@@ -118,7 +118,7 @@ include('includes/header.php');
         <tr>
         <td colspan="4">
             %d record(s) returned.
-            [ <a href="insert-student.php">Insert Student</a> ]
+            [ <a href="insert-student-Q4">Insert Student</a> ]
         </td>
         </tr>',
         $result->num_rows);

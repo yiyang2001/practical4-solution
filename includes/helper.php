@@ -38,70 +38,6 @@ $PROGRAMS = getPrograms();
 $GENDERS = getGenders();
 
 ///////////////////////////////////////////////////////////////////////////////
-// HTML helpers ///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-// Print a <select> element.
-function htmlSelect($name, $items, $selectedValue = '', $default = '')
-{
-    printf('<select name="%s" id="%s">' . "\n",
-           $name, $name);
-
-    if ($default != null)
-    {
-        printf('<option value="">%s</option>', $default);
-    }
-
-    foreach ($items as $value => $text)
-    {
-        printf('<option value="%s" %s>%s</option>' . "\n",
-               $value,
-               $value == $selectedValue ? 'selected="selected"' : '',
-               $text);
-    }
-    
-    echo "</select>\n";
-}
-
-// Print a <input type="text"> element.
-function htmlInputText($name, $value = '', $maxlength = '')
-{
-    printf('<input type="text" name="%s" id="%s" value="%s" maxlength="%s" />' . "\n",
-           $name, $name, $value, $maxlength);
-}
-
-// Print a <input type="password"> element.
-function htmlInputPassword($name, $value = '', $maxlength = '')
-{
-    printf('<input type="password" name="%s" id="%s" value="%s" maxlength="%s" />' . "\n",
-           $name, $name, $value, $maxlength);
-}
-
-// Print a <input type="hidden"> element.
-function htmlInputHidden($name, $value = '')
-{
-    printf('<input type="hidden" name="%s" id="%s" value="%s" />' . "\n",
-           $name, $name, $value);
-}
-
-// Print a group of <input type="radio"> elements.
-function htmlRadioList($name, $items, $selectedValue = '', $break = false)
-{
-    foreach ($items as $value => $text)
-    {
-        printf('
-            <input type="radio" name="%s" id="%s" value="%s" %s />
-            <label for="%s">%s</label>' . "\n",
-            $name, $value, $value,
-            $value == $selectedValue ? 'checked="checked"' : '',
-            $value, $text);
-
-        if ($break)
-            echo "<br />\n";
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // Validators /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -127,28 +63,41 @@ function validateStudentID($id)
 // Used by function validateStudentID().
 function isStudentIDExist($id)
 {
+    // Flag to indicate if Student ID exist.
     $exist = false;
     
     // https://www.w3schools.com/php/php_mysql_connect.asp
-    $con = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    // Step 1 : Connect to Database
+    $con = mysqli_connect(DB_HOST,DB_USER,DB_PASS,DB_NAME);
+
+    // Step 2: Check Database connection connect successfully
+    if (mysqli_connect_errno()){
+        die ('Connection Failed'. mysqli_connect_error());
+    }
     // https://www.w3schools.com/php/func_mysqli_real_escape_string.asp
     // https://stackoverflow.com/questions/6327679/what-does-mysql-real-escape-string-really-do
-    $id  = $con->real_escape_string($id);
+    
+    // Step 3 : Sanitize the input
+    $id  = mysqli_escape_string($con, $id);
+
+    // Step 4 : Prepare SQL Statement
     $sql = "SELECT * FROM Student WHERE StudentID = '$id'";
 
-    if ($result = $con->query($sql))
+    // Step 5 : Execute the Query and store in $result
+    if ($result = mysqli_query($con, $sql))
     {
-        if ($result->num_rows > 0)
+        // Step 6 : Check if the number of row inside $result is more than 0, if yes, set $exist to true.
+        if (mysqli_num_rows($result) > 0)
         {
             $exist = true;
         }
     }
     
+    // Step 7 : Release the resource
     // https://www.w3schools.com/php/func_mysqli_free_result.asp
-    $result->free();
+    mysqli_free_result($result);
     // https://www.w3schools.com/php/func_mysqli_close.asp
-    $con->close();
-
+    mysqli_close($con);
     return $exist;
 }
 
@@ -197,6 +146,12 @@ function validateProgram($program)
     {
         return 'Invalid <strong>Program</strong> code detected.';
     }
+}
+
+function print_array($result) {
+    echo "<pre>";
+    print_r($result);
+    echo "</pre>";
 }
 
 ?>

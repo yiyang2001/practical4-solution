@@ -33,7 +33,11 @@ include('includes/header.php');
         // -----
         // https://www.w3schools.com/php/func_mysqli_connect.asp
         // Using Procedural style.
+
+        // Step 1 : Connect to Database
         $con = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+        // Step 2 : Check Database connection connect successfully
         if(!$con){ // mysqli_connect_errno() - Returns the error code from the last connect call , Zero if no error occurred.
             // mysqli_connect_error() - Returns a string description of the last connect error if any. NULL if no error occurred
             die("Connection failed: " . mysqli_connect_error());
@@ -42,16 +46,21 @@ include('includes/header.php');
 
         // https://www.w3schools.com/php/php_mysql_select.asp
         // https://www.w3schools.com/php/func_mysqli_query.asp
-
+        // Step 3 : Prepare SQL Stament
         $sql = "SELECT * FROM Student";
         // @ is not a good practice, it is used to suppress the error message.
+
+        // Step 4 : Execute the Query and store in $result
         $result = mysqli_query($con, $sql);
    
+        // Step 5 : Display the result. Check if the number of row inside $result is more than 0, display the result.
+        // Get the number of rows
         $num = mysqli_num_rows($result);
         if ($num>0)
         {
             // https://stackoverflow.com/questions/6681075/while-loop-in-php-with-assignment-operator
             // https://www.w3schools.com/php/func_mysqli_fetch_array.asp
+            // Step 6: Fetch the result and display records using mysqli_fetch_array with MYSQLI_ASSOC / MYSQLI_NUM/ MYSQLI_BOTH
             while($row = mysqli_fetch_array($result))
             {
                 printf('
@@ -97,12 +106,12 @@ include('includes/header.php');
             <tr>
             <td colspan="4">
                 %d record(s) returned.
-                [ <a href="insert-student.php">Insert Student</a> ]
+                [ <a href="insert-student-Q4">Insert Student</a> ]
             </td>
             </tr>',
             $num);
     
-
+        // Step 7 : Release the resource
         // https://www.w3schools.com/php/func_mysqli_free_result.asp
         mysqli_free_result($result);
         // https://www.w3schools.com/php/func_mysqli_close.asp

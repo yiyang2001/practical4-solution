@@ -9,8 +9,8 @@
     </head>
     <body>
         <p>
-            [ <a href="list-student.php">List Student</a>
-            | <a href="insert-student.php">Insert Student</a>
+            [ <a href="list-student-Q6.php">List Student</a>
+            | <a href="insert-student-Q4.php">Insert Student</a>
             ]
         </p>
 <!-- End of header -->

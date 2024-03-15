@@ -33,16 +33,23 @@ include('includes/header.php');
         // -----
         // Using Procedure style.
         // https://www.w3schools.com/php/php_mysql_connect.asp
+        // Step 1 : Connect to Database
         $con = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+        // Step 2 : Check Database connection connect successfully
         if(!$con){ // mysqli_connect_errno() - Returns the error code from the last connect call , Zero if no error occurred.
             die("Connection failed: " . mysqli_connect_error());
         }
         
         // https://www.w3schools.com/php/php_mysql_select.asp
         // https://www.w3schools.com/php/func_mysqli_query.asp
+        // Step 3 : Prepare SQL Stament
         $sql = "SELECT * FROM Student";
+
+        // Step 4 : Execute the Query and store in $result
         $result = mysqli_query($con, $sql);
 
+        // Step 5 : Display the result. Check if the number of row inside $result is more than 0, display the result.
         // mysqli_num_rows() - Returns the number of rows in a result set.
         $num_rows = mysqli_num_rows($result);
 
@@ -52,6 +59,7 @@ include('includes/header.php');
             // https://www.php.net/manual/en/mysqli-result.fetch-object.php
             // https://stackoverflow.com/questions/6681075/while-loop-in-php-with-assignment-operator
 
+            // Step 6 : Fetch and display records using mysqli_fetch_array with MYSQLI_ASSOC / MYSQLI_NUM/ MYSQLI_BOTH
             // mysqli_fetch_array() - Fetch a result row as an associative, a numeric array, or both
             while ($row = mysqli_fetch_array($result))
             {
@@ -63,9 +71,9 @@ include('includes/header.php');
                     <td>%s</td>
                     </tr>',
                     $row['StudentID'],
-                    $row['StudentName'],
-                    $row['Gender'],
-                    $row['Program']);
+                    $row[1],
+                    $GENDERS[$row['Gender']],
+                    $row['Program']. ' - ' . $PROGRAMS[$row[3]]);
                 // NOTE:
                 // -----
                 // Lookup tables (arrays) are defined in "helper.php".
@@ -105,11 +113,13 @@ include('includes/header.php');
             <tr>
             <td colspan="4">
                 %d record(s) returned.
-                [ <a href="insert-student.php">Insert Student</a> ]
+                [ <a href="insert-student-Q4.php">Insert Student</a> ]
             </td>
             </tr>',
             $num_rows);
         
+
+        // Step 7 : Release the resource    
         // https://www.w3schools.com/php/func_mysqli_free_result.asp
         // why we need to free the result at the end of the script?
         // because it will free the memory associated with the result.

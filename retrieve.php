@@ -38,6 +38,7 @@
 
 <?php
 
+// Step 1: Define the database connection details
 // Define the database connection details
 DEFINE ('DB_HOST', 'localhost');
 DEFINE ('DB_USER', 'root');

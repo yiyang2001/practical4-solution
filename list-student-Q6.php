@@ -114,14 +114,14 @@ include('includes/header.php');
     // Database select ////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 
-    $con = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $con = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     // SQL with WHERE and ORDER BY clause.
     $sql = "SELECT * FROM Student WHERE Program LIKE '$program' ORDER BY $sort $order";
 
-    if ($result = $con->query($sql))
+    if ($result = mysqli_query( $con, $sql))
     {
-        while ($row = $result->fetch_object())
+        while ($row = mysqli_fetch_array($result))
         {
             printf('
                 <tr>
@@ -130,10 +130,10 @@ include('includes/header.php');
                 <td>%s</td>
                 <td>%s</td>
                 </tr>',
-                $row->StudentID,
-                $row->StudentName,
-                $GENDERS[$row->Gender],
-                $row->Program . ' - ' .$PROGRAMS[$row->Program]);
+                $row['StudentID'],
+                $row['StudentName'],
+                $GENDERS[$row['Gender']],
+                $row['Program'] . ' - ' .$PROGRAMS[$row['Program']]);
         }
     }
 
@@ -141,10 +141,10 @@ include('includes/header.php');
         <tr>
         <td colspan="4">
             %d record(s) returned.
-            [ <a href="insert-student.php">Insert Student</a> ]
+            [ <a href="insert-student-Q4">Insert Student</a> ]
         </td>
         </tr>',
-        $result->num_rows);
+        mysqli_num_rows($result));
     echo '</table>'; // Table ends.
 
     $result->free(); // Free the result set
