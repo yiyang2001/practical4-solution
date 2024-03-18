@@ -20,45 +20,36 @@ include('includes/header.php');
     );
 
     // Validate sort and order values to prevent SQL errors and hacks.
-    $sort  = !isset($_GET['sort']) ? 'StudentID' :  (array_key_exists($_GET['sort'], $headers) ? $_GET['sort'] : 'StudentID');
+    if (!isset($_GET['sort'])) {
+        $sort = 'StudentID';
+    } else {
+        if (array_key_exists($_GET['sort'], $headers)) {
+            $sort = $_GET['sort'];
+        } else {
+            $sort = 'StudentID';
+        }
+    }
 
-    // OR 
-    // if (!isset($_GET['sort'])) {
-    //     $sort = 'StudentID';
-    // } else {
-    //     if (array_key_exists($_GET['sort'], $headers)) {
-    //         $sort = $_GET['sort'];
-    //     } else {
-    //         $sort = 'StudentID';
-    //     }
-    // }
-
-    $order = !isset($_GET['order']) ? 'ASC' :  ($_GET['order'] == 'DESC' ? 'DESC' : 'ASC');
-
-    // OR
-    // if (!isset($_GET['order'])) {
-    //     $order = 'ASC';
-    // } else {
-    //     if ($_GET['order'] == 'DESC') {
-    //         $order = 'DESC';
-    //     } else {
-    //         $order = 'ASC';
-    //     }
-    // }
+    if (!isset($_GET['order'])) {
+        $order = 'ASC';
+    } else {
+        if ($_GET['order'] == 'DESC') {
+            $order = 'DESC';
+        } else {
+            $order = 'ASC';
+        }
+    }
 
     // Validate program filter --> either IA, IB or IT.
-    $program = !isset($_GET['program']) ? '%' :  (array_key_exists($_GET['program'], $PROGRAMS) ? $_GET['program'] : '%');
-
-    // OR
-    // if (!isset($_GET['program'])) {
-    //     $program = '%';
-    // } else {
-    //     if (array_key_exists($_GET['program'], $PROGRAMS)) {
-    //         $program = $_GET['program'];
-    //     } else {
-    //         $program = '%';
-    //     }
-    // }    
+    if (!isset($_GET['program'])) {
+        $program = '%';
+    } else {
+        if (array_key_exists($_GET['program'], $PROGRAMS)) {
+            $program = $_GET['program'];
+        } else {
+            $program = '%';
+        }
+    }    
 
     ///////////////////////////////////////////////////////////////////////////
     // Generate filter options ////////////////////////////////////////////////
@@ -68,6 +59,7 @@ include('includes/header.php');
     printf('<a href="?sort=%s&order=%s">All Programs</a> ', $sort, $order);
     foreach ($PROGRAMS as $key => $value)
     {
+        // Generate filter links with sort and order parameters.
         printf('| <a href="?sort=%s&order=%s&program=%s">%s</a> ',
                $sort, $order, $key, $key);
     }
@@ -147,8 +139,8 @@ include('includes/header.php');
         mysqli_num_rows($result));
     echo '</table>'; // Table ends.
 
-    $result->free(); // Free the result set
-    $con->close();
+    mysqli_free_result($result);
+    mysqli_close($con);
     ///////////////////////////////////////////////////////////////////////
     ?>
 </div>

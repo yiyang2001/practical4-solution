@@ -22,8 +22,30 @@ include('includes/header.php');
     // https://www.w3schools.com/php/php_superglobals_get.asp
     // https://www.w3schools.com/php/func_array_key_exists.asp
     // Validate sort and order values to prevent SQL errors and hacks.
-    $sort  = empty($_GET) ? 'StudentID' : (array_key_exists($_GET['sort'], $headers) ? $_GET['sort'] : 'StudentID'); // if empty, default to StudentID.
-    $order = empty($_GET) ? 'ASC' : ($_GET['order'] == 'DESC' ? 'DESC' : 'ASC'); // if empty, default to ASC.
+
+    // Determine the sort field. Default to 'StudentID' if not set or invalid.
+    if (!isset($_GET)) { // If $_GET is not set. (No query string)
+        $sort = 'StudentID';
+    } else {
+        // Check if the sort field exists in the headers array, otherwise default to 'StudentID'.
+        if (array_key_exists($_GET['sort'], $headers)) {
+            $sort = $_GET['sort'];
+        } else {
+            $sort = 'StudentID';
+        }
+    }
+
+    // Determine the sort order. Default to 'ASC' if not set or invalid.
+    if (!isset($_GET)) { // If $_GET is not set. (No query string)
+        $order = 'ASC';
+    } else {
+        // Set order to 'DESC' if $_GET['order'] is 'DESC', otherwise default to 'ASC'.
+        if ($_GET['order'] == 'DESC') {
+            $order = 'DESC';
+        } else {
+            $order = 'ASC';
+        }
+    }
 
     ///////////////////////////////////////////////////////////////////////
     // Generate clickable table headers ///////////////////////////////////
@@ -45,6 +67,14 @@ include('includes/header.php');
                 $value,
                 $order == 'ASC' ? 'asc.png' : 'desc.png',      // Image.
                 $order == 'ASC' ? 'Ascending' : 'Descending'); // Alt text.
+
+            // OR
+
+            // echo '
+            //     <th>
+            //     <a href="?sort=' . $key . '&order=' . ($order == 'ASC' ? 'DESC' : 'ASC') . '">' . $value . '</a>
+            //     <img src="images/' . ($order == 'ASC' ? 'asc.png' : 'desc.png') . '" alt="' . ($order == 'ASC' ? 'Ascending' : 'Descending') . '" />
+            //     </th>';
         }
         else // Non-sorted field.
         {
@@ -54,20 +84,25 @@ include('includes/header.php');
                 </th>',
                 $key,
                 $value);
+
+            // OR
+
+            // echo '
+            //     <th>
+            //     <a href="?sort=' . $key . '&order=ASC">' . $value . '</a>
+            //     </th>';
         }
     }
     echo '</tr>';
 
 
     ///////////////////////////////////////////////////////////////////////
-    // Database select ////////////////////////////////////////////////////
+    // Database select (Generate Table Rows Details) //////////////////////
     ///////////////////////////////////////////////////////////////////////
-    // Notes:
-    // I am using Procedural style in this script.
-    
+
     $con = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-    // SQL with ORDER BY clause.
+    // SQL with ORDER BY clause. (ORDER BY COLUMN_NAME ASC|DESC)
     $sql = "SELECT * FROM Student ORDER BY $sort $order";
 
     if ($result = mysqli_query($con, $sql))
@@ -96,22 +131,6 @@ include('includes/header.php');
             //     <td>' . $row['Program'] . '</td>
             //     </tr>';
         }
-
-        // OR (if you prefer OOP style)
-        // while ($row = mysqli_fetch_object($result))
-        // {
-        //     printf('
-        //         <tr>
-        //         <td>%s</td>
-        //         <td>%s</td>
-        //         <td>%s</td>
-        //         <td>%s</td>
-        //         </tr>',
-        //         $row->StudentID,
-        //         $row->StudentName,
-        //         $GENDERS[$row->Gender],
-        //         $row->Program . ' - ' .$PROGRAMS[$row->Program]);
-        // }
     }
 
     printf('
@@ -124,8 +143,8 @@ include('includes/header.php');
         $result->num_rows);
     echo '</table>'; // Table ends.
 
-    $result->free();
-    $con->close();
+    mysqli_free_result($result); // Free the result set
+    mysqli_close($con);
     ///////////////////////////////////////////////////////////////////////
     ?>
 </div>
